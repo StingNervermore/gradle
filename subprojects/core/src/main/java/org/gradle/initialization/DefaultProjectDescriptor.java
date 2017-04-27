@@ -21,6 +21,7 @@ import org.gradle.api.initialization.ProjectDescriptor;
 import org.gradle.api.internal.project.ProjectIdentifier;
 import org.gradle.internal.FileUtils;
 import org.gradle.internal.file.PathToFileResolver;
+import org.gradle.internal.scripts.ScriptFileResolver;
 import org.gradle.util.Path;
 
 import java.io.File;
@@ -28,17 +29,22 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdentifier {
+
+    private static final String BUILD_SCRIPT_BASENAME = "build";
+
     private String name;
     private final PathToFileResolver fileResolver;
+    private final ScriptFileResolver scriptFileResolver;
     private File dir;
     private DefaultProjectDescriptor parent;
     private Set<ProjectDescriptor> children = new LinkedHashSet<ProjectDescriptor>();
     private ProjectDescriptorRegistry projectDescriptorRegistry;
     private Path path;
-    private String buildFileName = Project.DEFAULT_BUILD_FILE;
+    private String buildFileName;
 
     public DefaultProjectDescriptor(DefaultProjectDescriptor parent, String name, File dir,
-                                    ProjectDescriptorRegistry projectDescriptorRegistry, PathToFileResolver fileResolver) {
+                                    ProjectDescriptorRegistry projectDescriptorRegistry, PathToFileResolver fileResolver,
+                                    ScriptFileResolver scriptFileResolver) {
         this.parent = parent;
         this.name = name;
         this.fileResolver = fileResolver;
@@ -49,6 +55,7 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
         if (parent != null) {
             parent.getChildren().add(this);
         }
+        this.scriptFileResolver = scriptFileResolver;
     }
 
     private Path path(String name) {
@@ -105,6 +112,16 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
     }
 
     public String getBuildFileName() {
+        if (buildFileName == null) {
+            if (new File(dir, Project.DEFAULT_BUILD_FILE).isFile()) {
+                return Project.DEFAULT_BUILD_FILE;
+            }
+            File scriptFile = scriptFileResolver.resolveScriptFile(dir, BUILD_SCRIPT_BASENAME);
+            if (scriptFile != null) {
+                return scriptFile.getName();
+            }
+            return Project.DEFAULT_BUILD_FILE;
+        }
         return buildFileName;
     }
 
@@ -113,7 +130,7 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
     }
 
     public File getBuildFile() {
-        return FileUtils.canonicalize(new File(dir, buildFileName));
+        return FileUtils.canonicalize(new File(dir, getBuildFileName()));
     }
 
     public ProjectDescriptorRegistry getProjectDescriptorRegistry() {

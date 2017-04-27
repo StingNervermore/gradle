@@ -17,6 +17,7 @@ package org.gradle.initialization;
 
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.file.TestFiles;
+import org.gradle.internal.scripts.DefaultScriptFileResolver;
 import org.gradle.util.Path;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class DefaultProjectDescriptorRegistryTest {
 
     @Test
     public void addProjectDescriptor() {
-        DefaultProjectDescriptor rootProject = new DefaultProjectDescriptor(null, "testName", TEST_DIR, registry, FILE_RESOLVER);
+        DefaultProjectDescriptor rootProject = new DefaultProjectDescriptor(null, "testName", TEST_DIR, registry, FILE_RESOLVER, DefaultScriptFileResolver.empty());
 
         registry.addProject(rootProject);
         assertSame(rootProject, registry.getProject(rootProject.getPath()));
@@ -44,7 +45,7 @@ public class DefaultProjectDescriptorRegistryTest {
 
     @Test
     public void changeProjectDescriptorPath() {
-        DefaultProjectDescriptor project = new DefaultProjectDescriptor(null, "name", TEST_DIR, registry, FILE_RESOLVER);
+        DefaultProjectDescriptor project = new DefaultProjectDescriptor(null, "name", TEST_DIR, registry, FILE_RESOLVER, DefaultScriptFileResolver.empty());
         registry.addProject(project);
 
         registry.changeDescriptorPath(Path.path(":"), Path.path(":newPath"));

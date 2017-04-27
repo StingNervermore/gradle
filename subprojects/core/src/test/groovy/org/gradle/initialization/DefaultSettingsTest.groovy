@@ -29,6 +29,8 @@ import org.gradle.api.internal.initialization.ScriptHandlerFactory
 import org.gradle.api.internal.plugins.DefaultPluginManager
 import org.gradle.configuration.ScriptPluginFactory
 import org.gradle.groovy.scripts.ScriptSource
+import org.gradle.internal.scripts.DefaultScriptFileResolver
+import org.gradle.internal.scripts.ScriptFileResolver
 import org.gradle.internal.service.ServiceRegistry
 import org.gradle.internal.service.scopes.ServiceRegistryFactory
 import org.gradle.util.JUnit4GroovyMockery
@@ -56,6 +58,7 @@ class DefaultSettingsTest {
     ProjectDescriptorRegistry projectDescriptorRegistry
     ServiceRegistryFactory serviceRegistryFactory
     FileResolver fileResolver
+    ScriptFileResolver scriptFileResolver
     ScriptPluginFactory scriptPluginFactory
     ScriptHandlerFactory scriptHandlerFactory
     DefaultPluginManager pluginManager
@@ -73,6 +76,7 @@ class DefaultSettingsTest {
         scriptSourceMock = context.mock(ScriptSource)
         gradleMock = context.mock(GradleInternal)
         serviceRegistryFactory = context.mock(ServiceRegistryFactory.class)
+        scriptFileResolver = DefaultScriptFileResolver.empty()
         scriptPluginFactory = context.mock(ScriptPluginFactory.class)
         scriptHandlerFactory = context.mock(ScriptHandlerFactory.class)
         fileResolver = context.mock(FileResolver.class)
@@ -82,6 +86,9 @@ class DefaultSettingsTest {
         context.checking {
             one(serviceRegistryFactory).createFor(with(any(Settings.class)));
             will(returnValue(settingsServices));
+
+            allowing(settingsServices).get((Type)ScriptFileResolver.class);
+            will(returnValue(scriptFileResolver));
             allowing(settingsServices).get((Type)FileResolver.class);
             will(returnValue(fileResolver));
             allowing(settingsServices).get((Type)ScriptPluginFactory.class);

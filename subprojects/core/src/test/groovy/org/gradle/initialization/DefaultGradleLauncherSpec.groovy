@@ -36,6 +36,7 @@ import org.gradle.internal.concurrent.Stoppable
 import org.gradle.internal.progress.TestBuildOperationExecutor
 import org.gradle.internal.resources.DefaultResourceLockCoordinationService
 import org.gradle.internal.resources.ResourceLockCoordinationService
+import org.gradle.internal.scripts.DefaultScriptFileResolver
 import org.gradle.internal.service.ServiceRegistry
 import org.gradle.internal.service.scopes.BuildScopeServices
 import org.gradle.internal.work.DefaultWorkerLeaseService
@@ -84,7 +85,7 @@ class DefaultGradleLauncherSpec extends Specification {
         File expectedCurrentDir = new File(expectedRootDir, "currentDir");
 
         expectedRootProjectDescriptor = new DefaultProjectDescriptor(null, "someName", new File("somedir"), new DefaultProjectDescriptorRegistry(),
-            TestFiles.resolver(expectedRootDir));
+            TestFiles.resolver(expectedRootDir), DefaultScriptFileResolver.empty());
         expectedRootProject = TestUtil.createRootProject(expectedRootDir);
         expectedCurrentProject = TestUtil.createRootProject(expectedCurrentDir);
 
