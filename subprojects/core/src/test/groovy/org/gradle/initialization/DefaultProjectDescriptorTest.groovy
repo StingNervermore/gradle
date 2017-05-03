@@ -97,8 +97,8 @@ class DefaultProjectDescriptorTest extends Specification {
         def descriptor = projectDescriptor()
 
         and:
-        def parentDescriptor = new DefaultProjectDescriptor(null, "other", new File("other"), descriptorRegistry, fileResolver, DefaultScriptFileResolver.empty())
-        def otherDescriptor = new DefaultProjectDescriptor(parentDescriptor, testName.methodName, tmpDir.testDirectory, descriptorRegistry, fileResolver, DefaultScriptFileResolver.empty())
+        def parentDescriptor = new DefaultProjectDescriptor(null, "other", new File("other"), descriptorRegistry, fileResolver, null)
+        def otherDescriptor = new DefaultProjectDescriptor(parentDescriptor, testName.methodName, tmpDir.testDirectory, descriptorRegistry, fileResolver, null)
 
         expect:
         descriptor != otherDescriptor
@@ -127,7 +127,7 @@ class DefaultProjectDescriptorTest extends Specification {
         'build.gradle.kts' | ['.tac', '.gradle.kts']
     }
 
-    private ProjectDescriptor projectDescriptor(ScriptFileResolver scriptFileResolver = DefaultScriptFileResolver.empty()) {
+    private ProjectDescriptor projectDescriptor(ScriptFileResolver scriptFileResolver = null) {
         def parentDescriptor = new DefaultProjectDescriptor(null, "somename", new File("somefile"), descriptorRegistry, fileResolver, scriptFileResolver)
         def descriptor = new DefaultProjectDescriptor(parentDescriptor, testName.methodName, tmpDir.testDirectory, descriptorRegistry, fileResolver, scriptFileResolver)
         assertSame(parentDescriptor, descriptor.parent)

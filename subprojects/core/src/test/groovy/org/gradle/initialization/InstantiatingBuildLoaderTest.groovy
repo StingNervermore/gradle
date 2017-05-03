@@ -23,7 +23,6 @@ import org.gradle.api.internal.file.TestFiles
 import org.gradle.api.internal.initialization.ClassLoaderScope
 import org.gradle.api.internal.project.IProjectFactory
 import org.gradle.api.internal.project.ProjectInternal
-import org.gradle.internal.scripts.DefaultScriptFileResolver
 import org.gradle.test.fixtures.file.TestNameTestDirectoryProvider
 import org.gradle.util.TestUtil
 import org.junit.Rule
@@ -98,7 +97,7 @@ class InstantiatingBuildLoaderTest extends Specification {
     }
 
     ProjectDescriptor descriptor(String name, ProjectDescriptor parent, File projectDir) {
-        new DefaultProjectDescriptor(parent, name, projectDir, projectDescriptorRegistry, TestFiles.resolver(rootProjectDir), DefaultScriptFileResolver.empty())
+        new DefaultProjectDescriptor(parent, name, projectDir, projectDescriptorRegistry, TestFiles.resolver(rootProjectDir), null)
     }
 
     ProjectInternal project(ProjectDescriptor descriptor, ProjectInternal parent) {

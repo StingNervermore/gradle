@@ -16,11 +16,13 @@
 package org.gradle.initialization;
 
 import com.google.common.base.Objects;
+import org.gradle.api.Nullable;
 import org.gradle.api.Project;
 import org.gradle.api.initialization.ProjectDescriptor;
 import org.gradle.api.internal.project.ProjectIdentifier;
 import org.gradle.internal.FileUtils;
 import org.gradle.internal.file.PathToFileResolver;
+import org.gradle.internal.scripts.DefaultScriptFileResolver;
 import org.gradle.internal.scripts.ScriptFileResolver;
 import org.gradle.util.Path;
 
@@ -44,7 +46,7 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
 
     public DefaultProjectDescriptor(DefaultProjectDescriptor parent, String name, File dir,
                                     ProjectDescriptorRegistry projectDescriptorRegistry, PathToFileResolver fileResolver,
-                                    ScriptFileResolver scriptFileResolver) {
+                                    @Nullable ScriptFileResolver scriptFileResolver) {
         this.parent = parent;
         this.name = name;
         this.fileResolver = fileResolver;
@@ -55,7 +57,9 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
         if (parent != null) {
             parent.getChildren().add(this);
         }
-        this.scriptFileResolver = scriptFileResolver;
+        this.scriptFileResolver = scriptFileResolver != null
+            ? scriptFileResolver
+            : DefaultScriptFileResolver.empty();
     }
 
     private Path path(String name) {
