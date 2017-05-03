@@ -116,17 +116,7 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
     }
 
     public String getBuildFileName() {
-        if (buildFileName == null) {
-            if (new File(dir, Project.DEFAULT_BUILD_FILE).isFile()) {
-                return Project.DEFAULT_BUILD_FILE;
-            }
-            File scriptFile = scriptFileResolver.resolveScriptFile(dir, BUILD_SCRIPT_BASENAME);
-            if (scriptFile != null) {
-                return scriptFile.getName();
-            }
-            return Project.DEFAULT_BUILD_FILE;
-        }
-        return buildFileName;
+        return buildFile().getName();
     }
 
     public void setBuildFileName(String name) {
@@ -134,7 +124,22 @@ public class DefaultProjectDescriptor implements ProjectDescriptor, ProjectIdent
     }
 
     public File getBuildFile() {
-        return FileUtils.canonicalize(new File(dir, getBuildFileName()));
+        return FileUtils.canonicalize(buildFile());
+    }
+
+    private File buildFile() {
+        if (buildFileName != null) {
+            return new File(dir, buildFileName);
+        }
+        File defaultFile = new File(dir, Project.DEFAULT_BUILD_FILE);
+        if (defaultFile.isFile()) {
+            return defaultFile;
+        }
+        File scriptFile = scriptFileResolver.resolveScriptFile(dir, BUILD_SCRIPT_BASENAME);
+        if (scriptFile != null) {
+            return scriptFile;
+        }
+        return defaultFile;
     }
 
     public ProjectDescriptorRegistry getProjectDescriptorRegistry() {
